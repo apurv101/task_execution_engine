@@ -5,7 +5,7 @@ import base64
 
 
 
-def generate_action_prompt(task_description, google_vision_elements, yolo_elements, action_history):
+def generate_action_clickable_prompt(task_description, google_vision_elements, yolo_elements, action_history):
     return f"""
 I need to perform the task: '{task_description}'.
 I have just taken a screenshot of the current state of the screen. Look at the screenshot to understand what software we are using and where we are in the process.
@@ -38,13 +38,16 @@ When suggesting the next action, please specify:
 1. The type of action.
 2. The relevant **Text Elements** from the Google Vision OCR output that are associated with the action (as a list of dicts).
 3. The relevant **GUI Elements** from the YOLO output that are associated with the action (as a list of dicts).
-4. Provide a brief description of the action.
-5. If the action involves typing or key presses, provide the exact text or key combination.
+4. The final clickable coordinates where the action should be performed (as a tuple [x, y]).
+5. Provide a brief description of the action.
+6. If the action involves typing or key presses, provide the exact text or key combination.
 
 Other things to keep in mind:
+- Instead of using icons on dashboard, we will always prefer using the side menu or the top menu.
 - We will need to move the mouse to a specific location first before clicking.
 - When determining the relevant GUI elements, find YOLO elements that are close to or overlap with the relevant text elements.
-- Only suggest those actions that can be inferred from current screen. Do not suggest actions that require additional information.
+- Only suggest those actions that can be inferred from the current screen. Do not suggest actions that require additional information.
+
 
 The output should be in valid JSON format so it can be parsed programmatically. For example:
 ```json
@@ -58,6 +61,7 @@ The output should be in valid JSON format so it can be parsed programmatically. 
             "gui_elements": [
                 {{"element": "icon", "bounding_box": [90, 90, 160, 160], "confidence": 0.95, "type": "object"}}
             ],
+            "clickable_coordinates": [125, 125],
             "description": "Move mouse to the Outlook icon to open Outlook"
         }},
         {{
@@ -68,10 +72,12 @@ The output should be in valid JSON format so it can be parsed programmatically. 
             "gui_elements": [
                 {{"element": "icon", "bounding_box": [90, 90, 160, 160], "confidence": 0.95, "type": "object"}}
             ],
+            "clickable_coordinates": [125, 125],
             "description": "Double-click on the Outlook icon to open the application"
         }}
     ]
 }}
+
 """
 
 
@@ -92,7 +98,8 @@ class LLMInterface:
         GUI elements, action history, and an optional image (screenshot).
         """
         print("Generating next action...")
-        prompt = generate_action_prompt(task, google_vision_elements, yolo_elements, action_history)
+        # change here
+        prompt = generate_action_clickable_prompt(task, google_vision_elements, yolo_elements, action_history)
         ## append the prompt to file
         with open("prompt_test.txt", "a") as f:
             f.write(prompt)
