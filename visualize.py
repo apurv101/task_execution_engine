@@ -2,11 +2,6 @@ import os
 from PIL import Image, ImageDraw, ImageFont
 import cv2
 import json
-task = "Create a new customer named Acme Corporation"
-
-test_image_1 = "/Users/apoorvagarwal/Desktop/aimyable/system/screenshots/Screenshot 2024-09-19 at 11.41.46 PM.png"
-test_image_2 = "/Users/apoorvagarwal/Desktop/aimyable/system/screenshots/Screenshot 2024-09-20 at 1.40.24 PM.png"
-test_image_3 = "/Users/apoorvagarwal/Desktop/aimyable/system/screenshots/Screenshot 2024-09-20 at 1.43.29 PM.png"
 
 
 from llm_interface import LLMInterface
@@ -15,12 +10,12 @@ from vision_system import VisionSystem
 # open("actions_test.txt", "w").close()
 
 
-google_credentials_path = "/Users/apoorvagarwal/Desktop/aimyable/system/aimyable-test-bc025e804aba.json"
-yolo_model_path = "/Users/apoorvagarwal/Desktop/aimyable/system/yolov8_best.pt"
+# google_credentials_path = r"C:\Users\apoor\OneDrive\Desktop\aimyable\task_execution_engine\aimyable-test-bc025e804aba.json"
+# yolo_model_path = r"C:\Users\apoor\OneDrive\Desktop\aimyable\task_execution_engine\yolov8_best.pt"
 
 
-llm_interface = LLMInterface(api_key=os.getenv("API_KEY_OPEN_AI"))
-vision_system = VisionSystem(google_credentials_path, yolo_model_path)
+# llm_interface = LLMInterface(api_key=os.getenv("API_KEY_OPEN_AI"))
+# vision_system = VisionSystem(google_credentials_path, yolo_model_path)
 
 from PIL import Image, ImageDraw, ImageFont
 
@@ -110,12 +105,14 @@ def plot_bounding_boxes_and_points(image_path, actions, output_path):
         
         # Draw the clickable point if available
         if 'clickable_coordinates' in action:
-            x, y = action['clickable_coordinates']
-            # Draw a small circle at the clickable point
-            r = 5  # Radius of the circle
-            draw.ellipse((x - r, y - r, x + r, y + r), fill=point_color, outline=point_color)
-            # Optionally, annotate the point
-            draw.text((x + 10, y - 10), "Clickable Point", fill=point_color, font=font)
+            # check if clickable_coordinates is not empty list
+            if action['clickable_coordinates']:
+                x, y = action['clickable_coordinates']
+                # Draw a small circle at the clickable point
+                r = 5  # Radius of the circle
+                draw.ellipse((x - r, y - r, x + r, y + r), fill=point_color, outline=point_color)
+                # Optionally, annotate the point
+                draw.text((x + 10, y - 10), "Clickable Point", fill=point_color, font=font)
     
     # Save the image with annotations
     image.save(output_path)
@@ -155,47 +152,6 @@ def yolo_vision_output(yolo_elements, test_image_path, test_output_path):
     # Save the image with YOLO bounding boxes
     cv2.imwrite(test_output_path, image_yolo)
 
-all_history = []
-relevant_history = []
-def process_image(image_path, output_path, google_vision_path, yolo_vision_path):
-    global all_history
-    global relevant_history
-    google_vision_elements = vision_system.detect_text(image_path)
-    yolo_elements = vision_system.yolo_service(image_path)
-    plot_google_vision_output(google_vision_elements, image_path, google_vision_path)
-    yolo_vision_output(yolo_elements, image_path, yolo_vision_path)
 
-    action = llm_interface.generate_next_action(
-        task=task,
-        google_vision_elements=google_vision_elements,
-        yolo_elements=yolo_elements,
-        action_history=relevant_history,
-        image_path=image_path
-    )
-    print(action)
-    # insert action in a file pretty print
-    with open("actions_test.txt", "a") as f:
-        f.write(json.dumps(action, indent=4))
-        f.write("\n")
-
-
-
-    plot_bounding_boxes_and_points(image_path, action, output_path)
-    all_history = all_history + action['actions']
-    filtered_actions = [{'action': a['action'], 'description': a['description']} for a in action['actions']]
-    relevant_history = relevant_history + filtered_actions
-    print("*"*100)
-    print(relevant_history)
-
-
-
-# import time
-
-
-# process_image(test_image_1, 'annotated_pointed_screenshot1.png', 'google_vision1.png', 'yolo_vision1.png')
-# time.sleep(10)
-# process_image(test_image_2, 'annotated_pointed_screenshot2.png', 'google_vision2.png', 'yolo_vision2.png')
-# time.sleep(10)
-# process_image(test_image_3, 'annotated_pointed_screenshot3.png', 'google_vision3.png', 'yolo_vision3.png')
 
 

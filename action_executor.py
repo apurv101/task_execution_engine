@@ -9,6 +9,12 @@ image = Image.open(screenshot_path)
 image_width, image_height = image.size
 
 
+screen_width, screen_height = pyautogui.size()
+
+scale_x = screen_width / image_width
+scale_y = screen_height / image_height
+
+
 
 class ActionExecutor:
     def __init__(self):
@@ -28,14 +34,14 @@ class ActionExecutor:
                     x, y = coordinates
 
                     # Scale the coordinates if needed
-                    # x = int(x * scale_x)
-                    # y = int(y * scale_y)
+                    x = int(x * scale_x)
+                    y = int(y * scale_y)
 
                     print("Mouse has to move")
                     
                     print(x,y)
-                    x = x/2
-                    y = y/2
+                    # x = x/2
+                    # y = y/2
                     pyautogui.moveTo(x, y, duration=0.25)
                     print(f"Moved mouse to ({x}, {y})")
                 else:

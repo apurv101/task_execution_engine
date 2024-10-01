@@ -5,14 +5,16 @@ import os
 from llm_interface import LLMInterface
 from vision_system import VisionSystem
 from action_executor import ActionExecutor
-from action_history import ActionHistory
 from PIL import Image
 
-from test_llm_interface import plot_bounding_boxes_and_points, plot_google_vision_output, yolo_vision_output
+from visualize import plot_bounding_boxes_and_points, plot_google_vision_output, yolo_vision_output
 
 
-google_credentials_path = "/Users/apoorvagarwal/Desktop/aimyable/system/aimyable-test-bc025e804aba.json"
-yolo_model_path = "/Users/apoorvagarwal/Desktop/aimyable/system/yolov8_best.pt"
+# google_credentials_path = r"C:\Users\apoor\OneDrive\Desktop\aimyable\task_execution_engine\aimyable-test-bc025e804aba.json"
+# yolo_model_path = r"C:\Users\apoor\OneDrive\Desktop\aimyable\task_execution_engine\yolov8_best.pt"
+
+google_credentials_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+yolo_model_path = r"C:\Users\apoor\OneDrive\Desktop\aimyable\task_execution_engine\yolov8_best.pt"
 
 print("Hello!!")
 
@@ -26,13 +28,13 @@ def main():
     llm_interface = LLMInterface(api_key=os.getenv("API_KEY_OPEN_AI"))
     vision_system = VisionSystem(google_credentials_path, yolo_model_path)
     action_executor = ActionExecutor()
-    action_history = ActionHistory()
+
 
 
     
 
     # Define the task
-    task_description = "Create a new customer named Acme Corporation"
+    task_description = "Create a new vendor named Acme Corporation"
 
     # Initialize variables
     task_finished = False
@@ -52,8 +54,8 @@ def main():
 
         # Plot the bounding boxes and points
         
-        plot_google_vision_output(google_vision_elements, screenshot_path, f"action_google_vision_{k}.png")
-        yolo_vision_output(yolo_elements, screenshot_path, f"action_yolo_{k}.png")
+        plot_google_vision_output(google_vision_elements, screenshot_path, f"images/action_google_vision_{k}.png")
+        yolo_vision_output(yolo_elements, screenshot_path, f"images/action_yolo_{k}.png")
 
         # 3. Get action history
         history = action_history.get_history()
@@ -68,11 +70,11 @@ def main():
         )
 
         ## add action to a file
-        with open("actions_test.txt", "a") as f:
+        with open("actions_test.txt", "a", encoding="utf-8") as f:
             f.write(json.dumps(action, indent=4))
             f.write("\n")
 
-        plot_bounding_boxes_and_points(screenshot_path, action, f"action_annotated_screenshot_{k}.png")
+        plot_bounding_boxes_and_points(screenshot_path, action, f"images/action_annotated_screenshot_{k}.png")
 
         print("Action generated:", action)
 

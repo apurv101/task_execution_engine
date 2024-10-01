@@ -101,7 +101,7 @@ class LLMInterface:
         # change here
         prompt = generate_action_clickable_prompt(task, google_vision_elements, yolo_elements, action_history)
         ## append the prompt to file
-        with open("prompt_test.txt", "a") as f:
+        with open("prompt_test.txt", "a", encoding="utf-8") as f:
             f.write(prompt)
             f.write("#"*100)
             f.write("\n\n")
