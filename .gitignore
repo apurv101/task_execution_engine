@@ -1,2 +1,7 @@
 *.json
 *.pt
+
+images/
+
+# ignore pycache
+__pycache__/
