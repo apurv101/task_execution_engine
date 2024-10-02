@@ -5,6 +5,7 @@ import os
 from llm_interface import LLMInterface
 from vision_system import VisionSystem
 from action_executor import ActionExecutor
+from action_history import action_history
 from PIL import Image
 
 from visualize import plot_bounding_boxes_and_points, plot_google_vision_output, yolo_vision_output
