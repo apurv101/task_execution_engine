@@ -5,17 +5,20 @@ import os
 from llm_interface import LLMInterface
 from vision_system import VisionSystem
 from action_executor import ActionExecutor
-from action_history import action_history
+from action_history import ActionHistory
 from PIL import Image
+from dotenv import load_dotenv
+
+load_dotenv()
 
 from visualize import plot_bounding_boxes_and_points, plot_google_vision_output, yolo_vision_output
 
 
-# google_credentials_path = r"C:\Users\apoor\OneDrive\Desktop\aimyable\task_execution_engine\aimyable-test-bc025e804aba.json"
-# yolo_model_path = r"C:\Users\apoor\OneDrive\Desktop\aimyable\task_execution_engine\yolov8_best.pt"
-
-google_credentials_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+google_credentials_path = r"C:\Users\apoor\OneDrive\Desktop\aimyable\task_execution_engine\aimyable-test-bc025e804aba.json"
 yolo_model_path = r"C:\Users\apoor\OneDrive\Desktop\aimyable\task_execution_engine\yolov8_best.pt"
+
+# google_credentials_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+# yolo_model_path = r"C:\Users\apoor\OneDrive\Desktop\aimyable\task_execution_engine\yolov8_best.pt"
 
 print("Hello!!")
 
@@ -29,13 +32,15 @@ def main():
     llm_interface = LLMInterface(api_key=os.getenv("API_KEY_OPEN_AI"))
     vision_system = VisionSystem(google_credentials_path, yolo_model_path)
     action_executor = ActionExecutor()
+    action_history = ActionHistory()
+
 
 
 
     
 
     # Define the task
-    task_description = "Create a new vendor named Acme Corporation"
+    task_description = "Create a new customer named Acme Corporation"
 
     # Initialize variables
     task_finished = False

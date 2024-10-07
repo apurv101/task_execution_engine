@@ -4,70 +4,108 @@
             "action": "moveTo",
             "text_elements": [
                 {
-                    "element": "Add vendor",
+                    "element": "Customers",
                     "bounding_box": [
-                        607,
-                        469,
-                        634,
-                        480
+                        36,
+                        577,
+                        104,
+                        591
                     ],
-                    "text": "Add",
+                    "text": "Customers",
                     "type": "text"
                 },
                 {
-                    "element": "Add vendor",
+                    "element": "& leads",
                     "bounding_box": [
-                        638,
-                        469,
-                        686,
-                        480
+                        107,
+                        577,
+                        157,
+                        589
                     ],
-                    "text": "vendor",
+                    "text": "& leads",
                     "type": "text"
                 }
             ],
             "gui_elements": [
                 {
-                    "element": "button",
+                    "element": "text",
                     "bounding_box": [
-                        568.8835,
-                        406.25592,
-                        722.6172,
-                        515.2758
+                        24.660255,
+                        573.5733,
+                        162.29518,
+                        593.5934
                     ],
-                    "confidence": 0.69448596,
+                    "confidence": 0.58487916,
                     "type": "object"
                 }
             ],
             "clickable_coordinates": [
-                645,
-                473
+                70,
+                580
             ],
-            "description": "Move mouse to the 'Add vendor' button in the dashboard to start adding a new vendor."
+            "description": "Move mouse to the 'Customers & leads' menu item on the sidebar."
         },
         {
             "action": "click",
             "text_elements": [
                 {
-                    "element": "Add vendor",
+                    "element": "Customers",
                     "bounding_box": [
-                        607,
-                        469,
-                        634,
-                        480
+                        36,
+                        577,
+                        104,
+                        591
                     ],
-                    "text": "Add",
+                    "text": "Customers",
                     "type": "text"
                 },
                 {
-                    "element": "Add vendor",
+                    "element": "& leads",
                     "bounding_box": [
-                        638,
-                        469,
-                        686,
-                        480
+                        107,
+                        577,
+                        157,
+                        589
                     ],
-                    "text": "vendor",
+                    "text": "& leads",
+                    "type": "text"
+                }
+            ],
+            "gui_elements": [
+                {
+                    "element": "text",
+                    "bounding_box": [
+                        24.660255,
+                        573.5733,
+                        162.29518,
+                        593.5934
+                    ],
+                    "confidence": 0.58487916,
+                    "type": "object"
+                }
+            ],
+            "clickable_coordinates": [
+                70,
+                580
+            ],
+            "description": "Click on the 'Customers & leads' menu item to open the customers page."
+        }
+    ]
+}
+{
+    "actions": [
+        {
+            "action": "moveTo",
+            "text_elements": [
+                {
+                    "element": "Add customer manually",
+                    "bounding_box": [
+                        483,
+                        650,
+                        590,
+                        664
+                    ],
+                    "text": "Add customer manually",
                     "type": "text"
                 }
             ],
@@ -75,28 +113,282 @@
                 {
                     "element": "button",
                     "bounding_box": [
-                        568.8835,
-                        406.25592,
-                        722.6172,
-                        515.2758
+                        467.2694,
+                        640.4006,
+                        677.7303,
+                        673.21344
                     ],
-                    "confidence": 0.69448596,
+                    "confidence": 0.6094457,
                     "type": "object"
                 }
             ],
             "clickable_coordinates": [
-                645,
-                473
+                539,
+                660
             ],
-            "description": "Click on the 'Add vendor' button in the dashboard."
+            "description": "Move mouse to the 'Add customer manually' button."
         },
         {
-            "action": "typeText",
-            "text_elements": [],
-            "gui_elements": [],
-            "clickable_coordinates": [],
-            "description": "Type the vendor name 'Acme Corporation' into the appropriate input field.",
+            "action": "click",
+            "text_elements": [
+                {
+                    "element": "Add customer manually",
+                    "bounding_box": [
+                        483,
+                        650,
+                        590,
+                        664
+                    ],
+                    "text": "Add customer manually",
+                    "type": "text"
+                }
+            ],
+            "gui_elements": [
+                {
+                    "element": "button",
+                    "bounding_box": [
+                        467.2694,
+                        640.4006,
+                        677.7303,
+                        673.21344
+                    ],
+                    "confidence": 0.6094457,
+                    "type": "object"
+                }
+            ],
+            "clickable_coordinates": [
+                539,
+                660
+            ],
+            "description": "Click on the 'Add customer manually' button to start the process of adding a new customer."
+        }
+    ]
+}
+{
+    "actions": [
+        {
+            "action": "moveTo",
+            "text_elements": [
+                {
+                    "element": "Company name",
+                    "bounding_box": [
+                        1243,
+                        316,
+                        1305,
+                        330
+                    ],
+                    "text": "Company name",
+                    "type": "text"
+                }
+            ],
+            "gui_elements": [
+                {
+                    "element": "field",
+                    "bounding_box": [
+                        1238.9368,
+                        335.87128,
+                        1543.5656,
+                        373.39178
+                    ],
+                    "confidence": 0.8625504,
+                    "type": "object"
+                }
+            ],
+            "clickable_coordinates": [
+                1390,
+                350
+            ],
+            "description": "Move mouse to the 'Company name' input field."
+        },
+        {
+            "action": "click",
+            "text_elements": [
+                {
+                    "element": "Company name",
+                    "bounding_box": [
+                        1243,
+                        316,
+                        1305,
+                        330
+                    ],
+                    "text": "Company name",
+                    "type": "text"
+                }
+            ],
+            "gui_elements": [
+                {
+                    "element": "field",
+                    "bounding_box": [
+                        1238.9368,
+                        335.87128,
+                        1543.5656,
+                        373.39178
+                    ],
+                    "confidence": 0.8625504,
+                    "type": "object"
+                }
+            ],
+            "clickable_coordinates": [
+                1390,
+                350
+            ],
+            "description": "Click to focus on the 'Company name' input field."
+        },
+        {
+            "action": "type",
+            "text_elements": [
+                {
+                    "element": "Company name",
+                    "bounding_box": [
+                        1243,
+                        316,
+                        1305,
+                        330
+                    ],
+                    "text": "Company name",
+                    "type": "text"
+                }
+            ],
+            "gui_elements": [
+                {
+                    "element": "field",
+                    "bounding_box": [
+                        1238.9368,
+                        335.87128,
+                        1543.5656,
+                        373.39178
+                    ],
+                    "confidence": 0.8625504,
+                    "type": "object"
+                }
+            ],
+            "clickable_coordinates": [
+                1390,
+                350
+            ],
+            "description": "Type 'Acme Corporation' into the 'Company name' input field.",
             "text": "Acme Corporation"
+        }
+    ]
+}
+{
+    "actions": [
+        {
+            "action": "moveTo",
+            "text_elements": [
+                {
+                    "element": "Save",
+                    "bounding_box": [
+                        1832,
+                        993,
+                        1868,
+                        1005
+                    ],
+                    "text": "Save",
+                    "type": "text"
+                }
+            ],
+            "gui_elements": [
+                {
+                    "element": "button",
+                    "bounding_box": [
+                        1801.2396,
+                        979.1278,
+                        1898.5624,
+                        1015.7187
+                    ],
+                    "confidence": 0.7126527,
+                    "type": "object"
+                }
+            ],
+            "clickable_coordinates": [
+                1850,
+                1000
+            ],
+            "description": "Move mouse to the 'Save' button."
+        },
+        {
+            "action": "click",
+            "text_elements": [
+                {
+                    "element": "Save",
+                    "bounding_box": [
+                        1832,
+                        993,
+                        1868,
+                        1005
+                    ],
+                    "text": "Save",
+                    "type": "text"
+                }
+            ],
+            "gui_elements": [
+                {
+                    "element": "button",
+                    "bounding_box": [
+                        1801.2396,
+                        979.1278,
+                        1898.5624,
+                        1015.7187
+                    ],
+                    "confidence": 0.7126527,
+                    "type": "object"
+                }
+            ],
+            "clickable_coordinates": [
+                1850,
+                1000
+            ],
+            "description": "Click the 'Save' button to save the new customer."
+        }
+    ]
+}
+{
+    "actions": [
+        {
+            "action": "finish",
+            "text_elements": [
+                {
+                    "element": "Acme",
+                    "bounding_box": [
+                        530,
+                        332,
+                        597,
+                        355
+                    ],
+                    "text": "Acme",
+                    "type": "text"
+                },
+                {
+                    "element": "Corporation",
+                    "bounding_box": [
+                        602,
+                        333,
+                        743,
+                        357
+                    ],
+                    "text": "Corporation",
+                    "type": "text"
+                }
+            ],
+            "gui_elements": [
+                {
+                    "element": "text",
+                    "bounding_box": [
+                        530.8059,
+                        523.632,
+                        674.1656,
+                        555.1509
+                    ],
+                    "confidence": 0.51745915,
+                    "type": "object"
+                }
+            ],
+            "clickable_coordinates": [
+                570,
+                350
+            ],
+            "description": "The new customer 'Acme Corporation' has been successfully created and saved. No further actions are required for this task."
         }
     ]
 }

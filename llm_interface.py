@@ -24,15 +24,15 @@ The action history (the actions already performed) is:
 Based on this information, predict the next action I need to perform to accomplish the task.
 
 The next action must correspond to one of the following types:
-- Move the mouse to a specific position (e.g., moveTo action).
-- Click at a specific position.
-- Double-click at a specific position.
-- Right-click at a specific position.
-- Scroll by a specific amount.
-- Type text into a specific input field.
-- Press specific keyboard keys.
-- Drag from one position to another.
-- Finish the task.
+- Move the mouse to a specific position (e.g., **moveTo** action).
+- Click at a specific position (e.g., **click** action).
+- Double-click at a specific position (e.g., **doubleClick** action).
+- Right-click at a specific position (e.g., **rightClick** action).
+- Scroll by a specific amount (e.g., **scroll** action).
+- Type text into a specific input field (e.g., **type** action).
+- Press specific keyboard keys (e.g., **press** action).
+- Drag from one position to another (e.g., **drag** action).
+- Finish the task (e.g., **finish** action).
 
 When suggesting the next action, please specify:
 1. The type of action.
@@ -79,6 +79,7 @@ The output should be in valid JSON format so it can be parsed programmatically. 
 }}
 
 """
+
 
 
 
