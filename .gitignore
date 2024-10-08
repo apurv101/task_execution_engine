@@ -5,3 +5,5 @@ images/
 
 # ignore pycache
 __pycache__/
+venv/
+.env

@@ -86,11 +86,12 @@ To set up the system, you need to install the following dependencies:
 - `google-cloud-vision`: For Google Vision API to detect text elements.
 - `ultralytics`: For YOLO object detection model.
 - `requests`: To interact with the LLM API.
+- `python-dotenv`: To load environment variables
 
 Run the following command to install these dependencies:
 
 ```bash
-pip install pyautogui Pillow google-cloud-vision ultralytics requests
+pip install pyautogui Pillow google-cloud-vision ultralytics requests python-dotenv
 ```
 
 You will also need to set up Google Vision API credentials for text detection. Follow the [Google Cloud documentation](https://cloud.google.com/vision/docs/setup) for instructions.
