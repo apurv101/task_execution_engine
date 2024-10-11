@@ -46,16 +46,10 @@ def print_tree(startpath, root_path, spec=None, prefix="", file_handle=None, vis
     # Exclude specific directories and files
     exclude = [
         ".git",
-        "extras",
-        "refresher.py",
-        "print_tree.py",
         "prompt_context.txt",
         "directory_structure.txt",
         "context_creator.py",
-        "uploads",
         "venv",
-        "generate_vapid_keys.py",
-        "fetch_file.py"
     ]
     entries = [e for e in entries if e.name not in exclude]
     
@@ -113,22 +107,25 @@ def main():
 
     # Step 2: Concatenate file contents into the same output file
     input_files = [
-        'action_executor.py',
-        'action_history.py',
+        # 'action_history.py',
         # 'actions_test.txt',
         # 'context_creator.py',
         # 'llm_interface.py',
-        'new_llm_interface.py',
+        # 'new_llm_interface.py',
         # 'new_prompt_test.txt',
-        'new_test_action_interface.py',
-        'readme.md',
+        # 'new_test_action_interface.py',
+        # 'readme.md',
         # 'requirements.txt',
         'sample_prompts.py',
         # 'test_action_interface.py',
         # 'test_tasks.py',
-        'test_vision_system.py',
-        'vision_system.py',
+        # 'test_vision_system.py',
+        # 'vision_system.py',
+        'main_server.py',
+        'vision_system_backend.py',
+        'llm_interface_backend.py',
         'visualize.py',
+        'action_executor.py',
     ]
     concatenate_files(input_files, output_file)
 

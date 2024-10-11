@@ -14,8 +14,8 @@ load_dotenv()
 from visualize import plot_bounding_boxes_and_points, plot_google_vision_output, yolo_vision_output
 
 
-google_credentials_path = r"C:\Users\apoor\OneDrive\Desktop\aimyable\task_execution_engine\aimyable-test-bc025e804aba.json"
-yolo_model_path = r"C:\Users\apoor\OneDrive\Desktop\aimyable\task_execution_engine\yolov8_best.pt"
+google_credentials_path = "/Users/muffu/Documents/Projects/pythonProjects/task_execution_engine/aimyable-test-bc025e804aba.json"
+yolo_model_path = "/Users/muffu/Documents/Projects/pythonProjects/task_execution_engine/yolov8_best.pt"
 
 # google_credentials_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
 # yolo_model_path = r"C:\Users\apoor\OneDrive\Desktop\aimyable\task_execution_engine\yolov8_best.pt"
@@ -48,6 +48,7 @@ def main():
     k = 0
 
     while not task_finished:
+        time.sleep(3)
         print("\n--- New Iteration ---")
 
         # 1. Take a screenshot
@@ -95,8 +96,9 @@ def main():
         # 6. Update action history
         action_history.add_action(action)
 
+        time.sleep(2)  # Adjust the sleep time as needed
         # 7. Wait before the next iteration
-        time.sleep(30)  # Adjust the sleep time as needed
+        time.sleep(5)  # Adjust the sleep time as needed
 
         k += 1
 
