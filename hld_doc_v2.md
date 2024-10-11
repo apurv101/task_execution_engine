@@ -34,7 +34,7 @@ The system comprises three main components:
 
 2. **Backend Server**: A RESTful API server that processes task descriptions and screenshots to determine the next actions.
 
-3. **MongoDB Database**: Stores tasks, sub-tasks, and action histories for the application.
+3. **MongoDB Database**: Stores tasks, instructions, and action histories for the application.
 
 The core functionality involves capturing the current screen, interpreting GUI elements using Google Vision and YOLO models, determining next actions using a Large Language Model (LLM), and executing those actions via `pyautogui`.
 
@@ -50,7 +50,7 @@ The core functionality involves capturing the current screen, interpreting GUI e
 
 ### Desktop Application
 
-- **Function**: Retrieves pending sub-tasks from MongoDB, captures screenshots, communicates with the backend server, and executes the received actions.
+- **Function**: Retrieves pending instructions from MongoDB, captures screenshots, communicates with the backend server, and executes the received actions.
 
 - **Technologies**:
   - Python
@@ -58,16 +58,16 @@ The core functionality involves capturing the current screen, interpreting GUI e
   - MongoDB driver for accessing the database
 
 - **Responsibilities**:
-  - Retrieve the next pending sub-task from the `sub_tasks` collection.
-  - Update the status of the sub-task to "in-progress".
+  - Retrieve the next pending instruction from the `instructions` collection.
+  - Update the status of the instruction to "in-progress".
   - Capture the current screen state.
-  - Send sub-task IDs and screenshots to the backend server.
+  - Send instruction IDs and screenshots to the backend server.
   - Execute actions received from the backend server.
-  - Update the status of the sub-task to "completed" or "failed" based on execution outcome.
+  - Update the status of the instruction to "completed" or "failed" based on execution outcome.
 
 ### Backend Server
 
-- **Function**: Processes incoming task descriptions and screenshots to generate the next actions, manages tasks and sub-tasks in MongoDB.
+- **Function**: Processes incoming task descriptions and screenshots to generate the next actions, manages tasks and instructions in MongoDB.
 
 - **Technologies**:
   - Python
@@ -75,13 +75,13 @@ The core functionality involves capturing the current screen, interpreting GUI e
   - Google Vision API for text detection
   - YOLO model for object detection
   - OpenAI API for LLM integration
-  - MongoDB for storing tasks, sub-tasks, and action histories
+  - MongoDB for storing tasks, instructions, and action histories
 
 - **Responsibilities**:
-  - Receive task descriptions via API and create tasks and sub-tasks.
-  - Use LLM to break down tasks into sub-tasks.
-  - Store tasks and sub-tasks in MongoDB.
-  - Receive sub-task IDs and screenshots from the desktop application.
+  - Receive task descriptions via API and create tasks and instructions.
+  - Use LLM to break down tasks into instructions.
+  - Store tasks and instructions in MongoDB.
+  - Receive instruction IDs and screenshots from the desktop application.
   - Use computer vision to interpret GUI elements.
   - Utilize LLM to determine the next actions.
   - Update action history in MongoDB.
@@ -89,16 +89,16 @@ The core functionality involves capturing the current screen, interpreting GUI e
 
 ### MongoDB Database
 
-- **Function**: Stores tasks, sub-tasks, and action histories for the application.
+- **Function**: Stores tasks, instructions, and action histories for the application.
 
 - **Technologies**:
   - MongoDB
   - `motor` (async MongoDB driver for Python)
 
 - **Responsibilities**:
-  - Store main tasks with their descriptions and list of sub-task IDs.
-  - Store sub-tasks with their descriptions, statuses, and action histories.
-  - Provide efficient querying mechanisms for retrieving pending sub-tasks.
+  - Store main tasks with their descriptions and list of instruction IDs.
+  - Store instructions with their descriptions, statuses, and action histories.
+  - Provide efficient querying mechanisms for retrieving pending instructions.
   - Ensure data consistency and integrity.
 
 ---
@@ -113,34 +113,34 @@ The core functionality involves capturing the current screen, interpreting GUI e
 
 2. **Task Decomposition**:
 
-   - The backend server uses the LLM to generate sub-tasks based on the main task description.
+   - The backend server uses the LLM to generate instructions based on the main task description.
 
 3. **Database Insertion**:
 
    - Inserts the main task into the `tasks` collection.
-   - Inserts sub-tasks into the `sub_tasks` collection, referencing the `task_id`.
+   - Inserts instructions into the `instructions` collection, referencing the `task_id`.
 
 ### Desktop Application Processing
 
-1. **Sub-Task Retrieval**:
+1. **Instruction Retrieval**:
 
-   - The desktop application queries the `sub_tasks` collection to get the next sub-task with `status: "pending"` for a specific `task_id`.
-   - Updates the status of the sub-task to "in-progress".
+   - The desktop application queries the `instructions` collection to get the next instruction with `status: "pending"` for a specific `task_id`.
+   - Updates the status of the instruction to "in-progress".
 
 2. **Action Execution**:
 
-   - The desktop application calls the backend server with the `sub_task_id` and the current screenshot.
+   - The desktop application calls the backend server with the `instruction_id` and the current screenshot.
    - Executes the received actions using `pyautogui`.
 
-3. **Sub-Task Completion**:
+3. **Instruction Completion**:
 
-   - Updates the sub-task’s status to "completed" upon success or "failed" upon failure in MongoDB.
+   - Updates the instruction’s status to "completed" upon success or "failed" upon failure in MongoDB.
 
 ### Backend Server Interaction
 
 1. **Action Generation**:
 
-   - Upon receiving the `sub_task_id` and screenshot from the desktop application, the backend server retrieves the sub-task from the `sub_tasks` collection, including its `action_history`.
+   - Upon receiving the `instruction_id` and screenshot from the desktop application, the backend server retrieves the instruction from the `instructions` collection, including its `action_history`.
 
 2. **GUI Element Detection**:
 
@@ -148,11 +148,11 @@ The core functionality involves capturing the current screen, interpreting GUI e
 
 3. **Next Actions Determination**:
 
-   - The LLM Interface processes the sub-task description, detected GUI elements, and action history to generate the next actions.
+   - The LLM Interface processes the instruction description, detected GUI elements, and action history to generate the next actions.
 
 4. **Action History Update**:
 
-   - Updates the `action_history` for the sub-task in the `sub_tasks` collection.
+   - Updates the `action_history` for the instruction in the `instructions` collection.
 
 5. **Response to Desktop Application**:
 
@@ -183,8 +183,8 @@ The core functionality involves capturing the current screen, interpreting GUI e
 
 ### Purpose
 
-- Store main tasks, sub-tasks, action histories, and their statuses.
-- Enable retrieval and updating of tasks and sub-tasks for processing.
+- Store main tasks, instructions, action histories, and their statuses.
+- Enable retrieval and updating of tasks and instructions for processing.
 
 ### Collections
 
@@ -195,13 +195,13 @@ The core functionality involves capturing the current screen, interpreting GUI e
   "_id": ObjectId("..."),
   "task_id": "unique-task-id",
   "description": "Main task description",
-  "sub_tasks": [
+  "instructions": [
     {
-      "sub_task_id": "sub-task-id-1",
+      "instruction_id": "instruction-id-1",
       "status": "pending",
       "updated_at": ISODate("...")
     },
-    // ... other sub-tasks
+    // ... other instructions
   ],
   "created_at": ISODate("..."),
   "updated_at": ISODate("...")
@@ -212,21 +212,21 @@ The core functionality involves capturing the current screen, interpreting GUI e
   - `_id`: MongoDB's unique identifier.
   - `task_id`: Unique identifier for the main task.
   - `description`: Description of the main task.
-  - `sub_tasks`: Array of sub-task references.
-    - `sub_task_id`: Unique identifier for the sub-task.
-    - `status`: Current status of the sub-task.
+  - `instructions`: Array of instruction references.
+    - `instruction_id`: Unique identifier for the instruction.
+    - `status`: Current status of the instruction.
     - `updated_at`: Timestamp of the last update.
   - `created_at`: Timestamp when the task was created.
   - `updated_at`: Timestamp when the task was last updated.
 
-#### `sub_tasks` Collection
+#### `instructions` Collection
 
 ```json
 {
   "_id": ObjectId("..."),
-  "sub_task_id": "sub-task-id-1",
+  "instruction_id": "instruction-id-1",
   "task_id": "unique-task-id",
-  "sub_task_description": "Sub-task description",
+  "instruction_description": "Instruction description",
   "action_history": [
     // List of actions performed
   ],
@@ -238,22 +238,22 @@ The core functionality involves capturing the current screen, interpreting GUI e
 
 - **Fields**:
   - `_id`: MongoDB's unique identifier.
-  - `sub_task_id`: Unique identifier for the sub-task.
+  - `instruction_id`: Unique identifier for the instruction.
   - `task_id`: Reference to the parent task.
-  - `sub_task_description`: Description of the sub-task.
-  - `action_history`: List of actions performed for the sub-task.
-  - `status`: Current status of the sub-task (`pending`, `in-progress`, `completed`, `failed`).
-  - `created_at`: Timestamp when the sub-task was created.
-  - `updated_at`: Timestamp when the sub-task was last updated.
+  - `instruction_description`: Description of the instruction.
+  - `action_history`: List of actions performed for the instruction.
+  - `status`: Current status of the instruction (`pending`, `in-progress`, `completed`, `failed`).
+  - `created_at`: Timestamp when the instruction was created.
+  - `updated_at`: Timestamp when the instruction was last updated.
 
 ### Indexes
 
 - **`tasks` Collection**:
   - Index on `task_id` (unique).
-- **`sub_tasks` Collection**:
-  - Index on `sub_task_id` (unique).
-  - Index on `task_id` to enable efficient retrieval of sub-tasks for a given task.
-  - Index on `status` for efficient querying of pending sub-tasks.
+- **`instructions` Collection**:
+  - Index on `instruction_id` (unique).
+  - Index on `task_id` to enable efficient retrieval of instructions for a given task.
+  - Index on `status` for efficient querying of pending instructions.
 
 ---
 
@@ -269,26 +269,26 @@ The core functionality involves capturing the current screen, interpreting GUI e
   - `task_description`: Description of the main task (JSON body).
 - **Response**:
   - `task_id`: Unique identifier for the created task.
-  - `sub_tasks`: List of sub-task IDs and their statuses.
+  - `instructions`: List of instruction IDs and their statuses.
 - **Process**:
   - Receives the task description.
-  - Uses the LLM to decompose the task into sub-tasks.
-  - Inserts the main task and sub-tasks into MongoDB.
-  - Returns the `task_id` and sub-tasks information.
+  - Uses the LLM to decompose the task into instructions.
+  - Inserts the main task and instructions into MongoDB.
+  - Returns the `task_id` and instructions information.
 
 #### 2. **Generate Actions**
 
 - **Endpoint**: `/generate_actions`
 - **Method**: `POST`
 - **Parameters**:
-  - `sub_task_id`: Identifier of the sub-task (form data).
+  - `instruction_id`: Identifier of the instruction (form data).
   - `screenshot`: Image file of the current screen (multipart/form-data).
 - **Response**:
-  - `sub_task_id`: Identifier of the sub-task.
+  - `instruction_id`: Identifier of the instruction.
   - `actions`: List of actions to perform.
 - **Process**:
   - Validates and processes the input.
-  - Retrieves the sub-task and its `action_history` from MongoDB.
+  - Retrieves the instruction and its `action_history` from MongoDB.
   - Calls the Vision System to detect GUI elements.
   - Uses the LLM Interface to determine the next actions.
   - Updates the `action_history` in MongoDB.
@@ -342,7 +342,7 @@ The core functionality involves capturing the current screen, interpreting GUI e
 
 ## Conclusion
 
-Amyable aims to automate tasks by intelligently interpreting the current state of the desktop environment and determining the necessary actions to accomplish a given task. By combining computer vision, natural language processing, and automation tools, it provides a robust framework for task automation on a host machine. The updated design leverages MongoDB for task and sub-task management, simplifying the architecture and enhancing scalability.
+Amyable aims to automate tasks by intelligently interpreting the current state of the desktop environment and determining the necessary actions to accomplish a given task. By combining computer vision, natural language processing, and automation tools, it provides a robust framework for task automation on a host machine. The updated design leverages MongoDB for task and instruction management, simplifying the architecture and enhancing scalability.
 
 ---
 
@@ -415,4 +415,3 @@ Amyable aims to automate tasks by intelligently interpreting the current state o
 *End of Document*
 
 ---
-
