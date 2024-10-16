@@ -5,3 +5,6 @@ images/
 
 # ignore pycache
 __pycache__/
+.pytest_cache/
+venv/
+.env
