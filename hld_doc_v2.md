@@ -1,4 +1,4 @@
-# Amyable High-Level Design Document
+# Amyable High-Level Design Document (Updated)
 
 ## Table of Contents
 
@@ -17,6 +17,11 @@
 10. [Security Considerations](#security-considerations)
 11. [Scalability and Performance](#scalability-and-performance)
 12. [Conclusion](#conclusion)
+13. [Environment Variables](#environment-variables)
+14. [Dependencies](#dependencies)
+15. [Setup Instructions](#setup-instructions)
+16. [Testing](#testing)
+17. [Maintainers](#maintainers)
 
 ---
 
@@ -50,24 +55,35 @@ The core functionality involves capturing the current screen, interpreting GUI e
 
 ### Desktop Application
 
-- **Function**: Retrieves pending instructions from MongoDB, captures screenshots, communicates with the backend server, and executes the received actions.
+- **Function**: Submits new tasks, processes instructions by interacting with the backend server, and executes actions on the host machine.
 
 - **Technologies**:
   - Python
   - `pyautogui` for automating GUI interactions
-  - MongoDB driver for accessing the database
+  - `requests` or `httpx` for HTTP communication with backend APIs
 
 - **Responsibilities**:
-  - Retrieve the next pending instruction from the `instructions` collection.
-  - Update the status of the instruction to "in-progress".
-  - Capture the current screen state.
-  - Send instruction IDs and screenshots to the backend server.
-  - Execute actions received from the backend server.
-  - Update the status of the instruction to "completed" or "failed" based on execution outcome.
+
+  - **Task Submission**:
+    - Call the `/add_task` API to submit a new task description.
+    - Receive the `task_id` and list of instructions.
+    - Store the `task_id` and instructions in memory.
+
+  - **Instruction Processing**:
+    - Loop over the instructions in the proper order.
+    - For each instruction:
+      - Capture the current screen state.
+      - Call the `/generate_actions` API with the `instruction_id` and screenshot.
+      - Execute the received actions using `pyautogui`.
+      - Upon completion or failure, call the `/update_instruction_status` API to update the status of the instruction accordingly.
+
+  - **Note**:
+    - The desktop application no longer directly accesses the MongoDB database.
+    - All interactions with tasks and instructions are done through the backend APIs.
 
 ### Backend Server
 
-- **Function**: Processes incoming task descriptions and screenshots to generate the next actions, manages tasks and instructions in MongoDB.
+- **Function**: Processes incoming task descriptions and screenshots to generate the next actions, manages tasks and instructions in MongoDB, and handles instruction status updates.
 
 - **Technologies**:
   - Python
@@ -78,14 +94,15 @@ The core functionality involves capturing the current screen, interpreting GUI e
   - MongoDB for storing tasks, instructions, and action histories
 
 - **Responsibilities**:
-  - Receive task descriptions via API and create tasks and instructions.
+  - Receive task descriptions via the `/add_task` API and create tasks and instructions.
   - Use LLM to break down tasks into instructions.
   - Store tasks and instructions in MongoDB.
-  - Receive instruction IDs and screenshots from the desktop application.
+  - Receive `instruction_id` and screenshots from the desktop application via the `/generate_actions` API.
   - Use computer vision to interpret GUI elements.
   - Utilize LLM to determine the next actions.
   - Update action history in MongoDB.
   - Respond with the next actions to the desktop application.
+  - Handle instruction status updates from the desktop application via the `/update_instruction_status` API.
 
 ### MongoDB Database
 
@@ -98,7 +115,7 @@ The core functionality involves capturing the current screen, interpreting GUI e
 - **Responsibilities**:
   - Store main tasks with their descriptions and list of instruction IDs.
   - Store instructions with their descriptions, statuses, and action histories.
-  - Provide efficient querying mechanisms for retrieving pending instructions.
+  - Provide efficient querying mechanisms for tasks and instructions.
   - Ensure data consistency and integrity.
 
 ---
@@ -109,7 +126,8 @@ The core functionality involves capturing the current screen, interpreting GUI e
 
 1. **Task Submission**:
 
-   - The backend server receives a task description via the API.
+   - The desktop application calls the `/add_task` API with the task description.
+   - The backend server receives the task description via the API.
 
 2. **Task Decomposition**:
 
@@ -120,21 +138,32 @@ The core functionality involves capturing the current screen, interpreting GUI e
    - Inserts the main task into the `tasks` collection.
    - Inserts instructions into the `instructions` collection, referencing the `task_id`.
 
+4. **Response to Desktop Application**:
+
+   - The backend server returns the `task_id` and the list of instructions to the desktop application.
+
 ### Desktop Application Processing
 
-1. **Instruction Retrieval**:
+1. **Instruction Processing**:
 
-   - The desktop application queries the `instructions` collection to get the next instruction with `status: "pending"` for a specific `task_id`.
-   - Updates the status of the instruction to "in-progress".
+   - The desktop application stores the `task_id` and instructions in memory.
+   - It loops over the instructions in the proper order.
+   - For each instruction:
 
-2. **Action Execution**:
+     a. **Action Generation**:
 
-   - The desktop application calls the backend server with the `instruction_id` and the current screenshot.
-   - Executes the received actions using `pyautogui`.
+        - Captures the current screen state.
+        - Calls the `/generate_actions` API with the `instruction_id` and screenshot.
+        - Receives the next actions from the backend server.
 
-3. **Instruction Completion**:
+     b. **Action Execution**:
 
-   - Updates the instruction’s status to "completed" upon success or "failed" upon failure in MongoDB.
+        - Executes the received actions using `pyautogui`.
+
+     c. **Instruction Status Update**:
+
+        - Upon successful execution, calls the `/update_instruction_status` API to update the instruction status to "completed".
+        - If execution fails, calls the `/update_instruction_status` API to update the instruction status to "failed".
 
 ### Backend Server Interaction
 
@@ -157,6 +186,10 @@ The core functionality involves capturing the current screen, interpreting GUI e
 5. **Response to Desktop Application**:
 
    - Sends the next actions back to the desktop application.
+
+6. **Instruction Status Update**:
+
+   - Upon receiving a status update request from the desktop application via the `/update_instruction_status` API, the backend server updates the instruction status in the `tasks` and `instructions` collection accordingly.
 
 ---
 
@@ -184,7 +217,7 @@ The core functionality involves capturing the current screen, interpreting GUI e
 ### Purpose
 
 - Store main tasks, instructions, action histories, and their statuses.
-- Enable retrieval and updating of tasks and instructions for processing.
+- Enable retrieval and updating of tasks and instructions.
 
 ### Collections
 
@@ -200,7 +233,7 @@ The core functionality involves capturing the current screen, interpreting GUI e
       "instruction_id": "instruction-id-1",
       "status": "pending",
       "updated_at": ISODate("...")
-    },
+    }
     // ... other instructions
   ],
   "created_at": ISODate("..."),
@@ -242,7 +275,7 @@ The core functionality involves capturing the current screen, interpreting GUI e
   - `task_id`: Reference to the parent task.
   - `instruction_description`: Description of the instruction.
   - `action_history`: List of actions performed for the instruction.
-  - `status`: Current status of the instruction (`pending`, `in-progress`, `completed`, `failed`).
+  - `status`: Current status of the instruction (pending, in-progress, completed, failed).
   - `created_at`: Timestamp when the instruction was created.
   - `updated_at`: Timestamp when the instruction was last updated.
 
@@ -253,7 +286,7 @@ The core functionality involves capturing the current screen, interpreting GUI e
 - **`instructions` Collection**:
   - Index on `instruction_id` (unique).
   - Index on `task_id` to enable efficient retrieval of instructions for a given task.
-  - Index on `status` for efficient querying of pending instructions.
+  - Index on `status` for efficient querying of instructions by status.
 
 ---
 
@@ -263,36 +296,52 @@ The core functionality involves capturing the current screen, interpreting GUI e
 
 #### 1. **Add New Task**
 
-- **Endpoint**: `/add_task`
-- **Method**: `POST`
-- **Parameters**:
-  - `task_description`: Description of the main task (JSON body).
-- **Response**:
-  - `task_id`: Unique identifier for the created task.
-  - `instructions`: List of instruction IDs and their statuses.
-- **Process**:
-  - Receives the task description.
-  - Uses the LLM to decompose the task into instructions.
-  - Inserts the main task and instructions into MongoDB.
-  - Returns the `task_id` and instructions information.
+   - **Endpoint**: `/add_task`
+   - **Method**: `POST`
+   - **Parameters**:
+     - `task_description`: Description of the main task (JSON body).
+   - **Response**:
+     - `task_id`: Unique identifier for the created task.
+     - `instructions`: List of instruction IDs and their descriptions.
+   - **Process**:
+     - Receives the task description.
+     - Uses the LLM to decompose the task into instructions.
+     - Inserts the main task and instructions into MongoDB.
+     - Returns the `task_id` and instructions information.
 
 #### 2. **Generate Actions**
 
-- **Endpoint**: `/generate_actions`
-- **Method**: `POST`
-- **Parameters**:
-  - `instruction_id`: Identifier of the instruction (form data).
-  - `screenshot`: Image file of the current screen (multipart/form-data).
-- **Response**:
-  - `instruction_id`: Identifier of the instruction.
-  - `actions`: List of actions to perform.
-- **Process**:
-  - Validates and processes the input.
-  - Retrieves the instruction and its `action_history` from MongoDB.
-  - Calls the Vision System to detect GUI elements.
-  - Uses the LLM Interface to determine the next actions.
-  - Updates the `action_history` in MongoDB.
-  - Returns the actions to the desktop application.
+   - **Endpoint**: `/generate_actions`
+   - **Method**: `POST`
+   - **Parameters**:
+     - `instruction_id`: Identifier of the instruction (form data).
+     - `screenshot`: Image file of the current screen (multipart/form-data).
+   - **Response**:
+     - `instruction_id`: Identifier of the instruction.
+     - `actions`: List of actions to perform.
+   - **Process**:
+     - Validates and processes the input.
+     - Retrieves the instruction and its `action_history` from MongoDB.
+     - Calls the Vision System to detect GUI elements.
+     - Uses the LLM Interface to determine the next actions.
+     - Updates the `action_history` in MongoDB.
+     - Returns the actions to the desktop application.
+
+3. **Update Instruction Status**
+
+   - **Endpoint**: `/update_instruction_status`
+   - **Method**: POST
+   - **Parameters**:
+     - `instruction_id`: Identifier of the instruction (JSON body).
+     - `status`: New status of the instruction ("completed" or "failed") (JSON body).
+   - **Response**:
+     - `instruction_id`: Identifier of the instruction.
+     - `status`: Updated status.
+     - `message`: Confirmation message.
+   - **Process**:
+     - Validates the `instruction_id` and `status`.
+     - Updates the status of the instruction in the `tasks` collection.
+     - Returns a confirmation message.
 
 ---
 
@@ -302,24 +351,27 @@ The core functionality involves capturing the current screen, interpreting GUI e
   - Validates input data and files.
   - Handles exceptions during image processing, LLM communication, and database operations.
   - Returns appropriate HTTP status codes and error messages.
+  - Specifically checks for valid `instruction_id` and `status` in `/update_instruction_status`.
 - **Logging**:
   - Logs significant events like errors, API calls, database operations, and action executions.
   - Stores logs for debugging and monitoring purposes.
 - **Retry Mechanisms**:
   - Implements retries for transient errors, especially when communicating with external APIs like OpenAI or Google Vision.
+  - The desktop application should handle network errors when calling backend APIs and implement retries or failover strategies.
 
 ---
 
 ## Security Considerations
 
 - **API Security**:
-  - Implements authentication and authorization for API endpoints.
+  - Implements authentication and authorization for API endpoints, including `/update_instruction_status`.
   - Uses HTTPS to encrypt data in transit.
 - **Data Protection**:
   - Sanitizes inputs to prevent injection attacks.
   - Stores sensitive data like API keys securely, using environment variables or secret managers.
 - **Access Control**:
   - Restricts access to the MongoDB database.
+  - Ensures that only authorized desktop applications can update instruction statuses.
 - **Compliance**:
   - Ensures compliance with data protection regulations, especially when handling screenshots that may contain sensitive information.
 
@@ -342,7 +394,7 @@ The core functionality involves capturing the current screen, interpreting GUI e
 
 ## Conclusion
 
-Amyable aims to automate tasks by intelligently interpreting the current state of the desktop environment and determining the necessary actions to accomplish a given task. By combining computer vision, natural language processing, and automation tools, it provides a robust framework for task automation on a host machine. The updated design leverages MongoDB for task and instruction management, simplifying the architecture and enhancing scalability.
+Amyable aims to automate tasks by intelligently interpreting the current state of the desktop environment and determining the necessary actions to accomplish a given task. By combining computer vision, natural language processing, and automation tools, it provides a robust framework for task automation on a host machine. The updated design removes direct database access from the desktop application, enhancing security, maintainability, and scalability by centralizing data interactions through backend APIs.
 
 ---
 
@@ -352,6 +404,7 @@ Amyable aims to automate tasks by intelligently interpreting the current state o
 - `GOOGLE_CREDENTIALS_PATH`: Path to the Google Cloud credentials JSON file.
 - `YOLO_MODEL_PATH`: Path to the YOLO model file.
 - `OPENAI_API_KEY`: API key for accessing OpenAI services.
+- `API_AUTH_TOKEN`: Token for authenticating API requests from the desktop application.
 
 ---
 
@@ -368,6 +421,7 @@ Amyable aims to automate tasks by intelligently interpreting the current state o
 - `httpx`
 - `python-dotenv` (for environment variables)
 - `asyncio`
+- `requests` (for HTTP communication)
 - MongoDB
 
 ---
@@ -375,19 +429,25 @@ Amyable aims to automate tasks by intelligently interpreting the current state o
 ## Setup Instructions
 
 1. **Clone the Repository**:
+
    ```bash
    git clone https://github.com/your-repo/amyable.git
    ```
+
 2. **Install Dependencies**:
+
    ```bash
    pip install -r requirements.txt
    ```
+
 3. **Set Environment Variables**:
    - Create a `.env` file or set environment variables directly.
 4. **Run the Backend Server**:
+
    ```bash
    uvicorn main_server:app --reload
    ```
+
 5. **Run the Desktop Application**:
    - Execute the desktop app script or binary on the host machine.
 
@@ -398,9 +458,11 @@ Amyable aims to automate tasks by intelligently interpreting the current state o
 - **Unit Tests**:
   - Write tests for individual modules like Vision System, LLM Interface, Action Executor, and database operations.
 - **Integration Tests**:
-  - Test the end-to-end flow from task creation to action execution.
+  - Test the end-to-end flow from task creation to action execution, including API interactions.
 - **Performance Tests**:
   - Benchmark the response times of the backend server and action execution.
+- **Security Tests**:
+  - Verify that unauthorized requests to the APIs are properly rejected.
 
 ---
 
@@ -412,6 +474,6 @@ Amyable aims to automate tasks by intelligently interpreting the current state o
 
 ---
 
-*End of Document*
+**End of Document**
 
 ---
